@@ -67,4 +67,4 @@ ENV SPARK_HOME="/var/lang/lib/python3.10/site-packages/pyspark" \
     AWS_SESSION_TOKEN="" \
     CUSTOM_SQL=""
 
-CMD [ "/var/task/sparkLambdaHandler.lambda_handler" ]
+CMD [ "sparkLambdaHandler.lambda_handler" ]
