@@ -12,6 +12,59 @@ formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+def extract_jdbc_conf(connection_name, aws_region):
+    """
+    Extract JDBC configuration from AWS Glue connection.
+
+    Args:
+        connection_name (str): Name of the Glue connection
+        aws_region (str): AWS region (default: 'us-east-1')
+
+    Returns:
+        dict: Dictionary containing fullUrl, user, password, and driver
+    """
+    try:
+        glue = boto3.client('glue', region_name=aws_region)
+        response = glue.get_connection(
+            Name=connection_name,
+            HidePassword=False
+        )
+        connection_properties = response['Connection']['ConnectionProperties']
+
+        # Get credentials from Secrets Manager if SECRETID is present
+        user = ''
+        password = ''
+
+        secret_id = connection_properties.get('SECRETID')
+        if secret_id:
+            secrets_client = boto3.client('secretsmanager', region_name=aws_region)
+            try:
+                secret_response = secrets_client.get_secret_value(SecretId=secret_id)
+                secret_data = json.loads(secret_response['SecretString'])
+                user = secret_data.get('username', '')
+                password = secret_data.get('password', '')
+            except Exception as e:
+                print(f"Error retrieving secret {secret_id}: {e}")
+                # Fall back to connection properties if secret retrieval fails
+                user = connection_properties.get('USERNAME', '')
+                password = connection_properties.get('PASSWORD', '')
+        else:
+            # Fall back to connection properties if no SECRETID
+            user = connection_properties.get('USERNAME', '')
+            password = connection_properties.get('PASSWORD', '')
+
+        # Build the configuration dictionary
+        jdbc_conf = {
+            'fullUrl': connection_properties.get('JDBC_CONNECTION_URL', ''),
+            'user': user,
+            'password': password,
+            'driver': connection_properties.get('JDBC_DRIVER_CLASS_NAME', '')
+        }
+
+        return jdbc_conf
+    except Exception as e:
+        logger.error(f"Error fetching connection properties from glue connection {connection_name}: {e}")
+        return None
 
 def get_table(db_name, table_name, aws_region):
     """
