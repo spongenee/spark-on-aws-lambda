@@ -32,6 +32,7 @@ echo $fw
     case "$fw" in
         POSTGRESQL)
             wget -q https://repo1.maven.org/maven2/org/postgresql/postgresql/42.2.9.jre7/postgresql-42.2.9.jre7.jar -P ${SPARK_HOME}/jars/
+            ;;
         HUDI)
             wget -q https://repo1.maven.org/maven2/org/apache/hudi/hudi-spark3.3-bundle_2.12/${HUDI_FRAMEWORK_VERSION}/hudi-spark3.3-bundle_2.12-${HUDI_FRAMEWORK_VERSION}.jar -P ${SPARK_HOME}/jars/
             ;;
