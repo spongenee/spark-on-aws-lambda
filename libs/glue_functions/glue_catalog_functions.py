@@ -35,7 +35,7 @@ def extract_jdbc_conf(connection_name, aws_region):
         user = ''
         password = ''
 
-        secret_id = connection_properties.get('SECRETID')
+        secret_id = connection_properties.get('SECRET_ID')
         if secret_id:
             secrets_client = boto3.client('secretsmanager', region_name=aws_region)
             try:
@@ -44,7 +44,7 @@ def extract_jdbc_conf(connection_name, aws_region):
                 user = secret_data.get('username', '')
                 password = secret_data.get('password', '')
             except Exception as e:
-                print(f"Error retrieving secret {secret_id}: {e}")
+                logger.error(f"Error retrieving secret {secret_id}: {e}")
                 # Fall back to connection properties if secret retrieval fails
                 user = connection_properties.get('USERNAME', '')
                 password = connection_properties.get('PASSWORD', '')
