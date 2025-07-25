@@ -23,6 +23,7 @@ RUN set -ex && \
     # Python package installation
     pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir pyspark==$PYSPARK_VERSION boto3 && \
+    pip install presidio_analyzer presidio_anonymizer && \
     # Conditional DEEQU installation
     (echo "$FRAMEWORK" | grep -q "DEEQU" && \
      pip install --no-cache-dir --no-deps pydeequ && \
