@@ -40,7 +40,7 @@ FROM public.ecr.aws/lambda/python:3.10
 # Single consolidated RUN layer for runtime setup
 COPY --from=builder /var/lang/lib/python3.10/site-packages/ /var/lang/lib/python3.10/site-packages/
 COPY --from=builder /var/runtime/ /var/runtime/
-COPY libs/glue_functions /home/glue_functions
+COPY libs /home/libs
 COPY spark-class /var/lang/lib/python3.10/site-packages/pyspark/bin/
 COPY sparkLambdaHandler.py ${LAMBDA_TASK_ROOT}
 
@@ -51,14 +51,14 @@ RUN set -ex && \
     yum clean all && \
     rm -rf /var/cache/yum /tmp/* /var/tmp/* && \
     # Set permissions in single operation
-    chmod -R 755 /home/glue_functions /var/lang/lib/python3.10/site-packages/pyspark
+    chmod -R 755 /home/libs /var/lang/lib/python3.10/site-packages/pyspark
 
 # Consolidated environment variables
 ENV SPARK_HOME="/var/lang/lib/python3.10/site-packages/pyspark" \
     SPARK_VERSION=3.3.0 \
     JAVA_HOME="/usr/lib/jvm/java-11-amazon-corretto" \
     PATH="$PATH:/var/lang/lib/python3.10/site-packages/pyspark/bin:/var/lang/lib/python3.10/site-packages/pyspark/sbin:/usr/lib/jvm/java-11-amazon-corretto/bin" \
-    PYTHONPATH="/var/lang/lib/python3.10/site-packages/pyspark/python:/var/lang/lib/python3.10/site-packages/pyspark/python/lib/py4j-0.10.9-src.zip:/home/glue_functions" \
+    PYTHONPATH="/var/lang/lib/python3.10/site-packages/pyspark/python:/var/lang/lib/python3.10/site-packages/pyspark/python/lib/py4j-0.10.9-src.zip:/home/libs" \
     INPUT_PATH="" \
     OUTPUT_PATH="" \
     AWS_ACCESS_KEY_ID="" \
