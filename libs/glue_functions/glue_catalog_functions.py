@@ -31,13 +31,9 @@ def extract_jdbc_conf(connection_name, aws_region):
         )
         connection_properties = response['Connection']['ConnectionProperties']
 
-        # Get credentials from Secrets Manager if SECRETID is present
-        user = ''
-        password = ''
-
         secret_id = connection_properties.get('SECRET_ID')
         if secret_id:
-            secrets_client = boto3.client('secretsmanager', region_name=aws_region)
+            secrets_client = boto3.client(service_name='secretsmanager', region_name=aws_region)
             try:
                 secret_response = secrets_client.get_secret_value(SecretId=secret_id)
                 secret_data = json.loads(secret_response['SecretString'])
@@ -58,9 +54,9 @@ def extract_jdbc_conf(connection_name, aws_region):
             'fullUrl': connection_properties.get('JDBC_CONNECTION_URL', ''),
             'user': user,
             'password': password,
-            'driver': connection_properties.get('JDBC_DRIVER_CLASS_NAME', '')
+            'driver': connection_properties.get('JDBC_DRIVER_CLASS_NAME', ''),
+            'secretId': connection_properties.get('SECRET_ID', '')
         }
-
         return jdbc_conf
     except Exception as e:
         logger.error(f"Error fetching connection properties from glue connection {connection_name}: {e}")
