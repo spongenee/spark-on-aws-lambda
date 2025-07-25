@@ -1,6 +1,6 @@
 import logging
 import sys
-
+import json
 import boto3
 
 from pyspark.sql.types import *
@@ -31,7 +31,7 @@ def extract_jdbc_conf(connection_name, aws_region):
         )
         connection_properties = response['Connection']['ConnectionProperties']
 
-        secret_id = connection_properties.get('SECRET_ID')
+        secret_id = connection_properties.get('SECRET_ID', '')
         if secret_id:
             secrets_client = boto3.client(service_name='secretsmanager', region_name=aws_region)
             try:
