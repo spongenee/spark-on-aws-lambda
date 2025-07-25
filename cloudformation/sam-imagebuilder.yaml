@@ -7,9 +7,10 @@ Parameters:
     Description: Prefix of the Image Repository to be created
   Framework:
     Type: String
-    Default: HUDI
+    Default: POSTGRESQL
     Description: Framework jars to download
     AllowedValues:
+      - POSTGRESQL
       - HUDI
       - DELTA
       - ICEBERG
