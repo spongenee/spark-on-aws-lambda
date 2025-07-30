@@ -4,7 +4,7 @@ FROM public.ecr.aws/lambda/python:3.10 as builder
 # Build arguments - consolidated at top
 ARG HADOOP_VERSION=3.2.4
 ARG AWS_SDK_VERSION=1.11.901
-ARG PYSPARK_VERSION=3.3.0
+ARG PYSPARK_VERSION=3.5.5
 ARG FRAMEWORK
 ARG DELTA_FRAMEWORK_VERSION=2.2.0
 ARG HUDI_FRAMEWORK_VERSION=0.12.2
@@ -58,7 +58,7 @@ RUN set -ex && \
 
 # Consolidated environment variables
 ENV SPARK_HOME="/var/lang/lib/python3.10/site-packages/pyspark" \
-    SPARK_VERSION=3.3.0 \
+    SPARK_VERSION=3.5.5 \
     JAVA_HOME="/usr/lib/jvm/java-11-amazon-corretto" \
     PATH="$PATH:/var/lang/lib/python3.10/site-packages/pyspark/bin:/var/lang/lib/python3.10/site-packages/pyspark/sbin:/usr/lib/jvm/java-11-amazon-corretto/bin" \
     PYTHONPATH="/var/lang/lib/python3.10/site-packages/pyspark/python:/var/lang/lib/python3.10/site-packages/pyspark/python/lib/py4j-0.10.9-src.zip:/home/libs" \
