@@ -115,6 +115,11 @@ Resources:
       PolicyName: !Sub 'SparkOnLmandaDefaulPolicy-${AWS::StackName}'
       PolicyDocument:
         Statement:
+
+          - Effect: Allow
+            Action:
+              - events:putevents
+            Resource: '*'
           - Effect: Allow
             Action:
               - ecr:GetAuthorizationToken
