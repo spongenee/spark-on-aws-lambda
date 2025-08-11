@@ -45,7 +45,7 @@ COPY requirements.txt ${LAMBDA_TASK_ROOT}/
 RUN if [ -f "${LAMBDA_TASK_ROOT}/requirements.txt" ]; then pip install --no-cache-dir -r ${LAMBDA_TASK_ROOT}/requirements.txt; fi
 
 # Copy application files
-COPY /home/libs/glue_functions /home/glue_functions
+COPY libs /home/libs
 COPY spark-class /var/lang/lib/python3.12/site-packages/pyspark/bin/
 COPY sparkLambdaHandler.py ${LAMBDA_TASK_ROOT}
 # Optionally copy log4j.properties if present
@@ -56,7 +56,7 @@ RUN set -ex && \
     dnf install -y java-11-amazon-corretto-headless && \
     dnf clean all && \
     rm -rf /var/cache/dnf /tmp/* /var/tmp/* && \
-    chmod -R 755 /home/glue_functions /var/lang/lib/python3.12/site-packages/pyspark && \
+    chmod -R 755 /home/libs /var/lang/lib/python3.12/site-packages/pyspark && \
     # Diagnostics for spark-class
     ls -la /var/lang/lib/python3.12/site-packages/pyspark/bin/ || echo "Spark bin directory not found" && \
     if [ -f "/var/lang/lib/python3.12/site-packages/pyspark/bin/spark-class" ]; then echo "Custom spark-class after copying:"; cat /var/lang/lib/python3.12/site-packages/pyspark/bin/spark-class; else echo "Custom spark-class not found"; fi && \
@@ -67,7 +67,7 @@ ENV SPARK_HOME="/var/lang/lib/python3.12/site-packages/pyspark" \
     SPARK_VERSION=3.5.5 \
     JAVA_HOME="/usr/lib/jvm/java-11-amazon-corretto" \
     PATH="$PATH:/var/lang/lib/python3.12/site-packages/pyspark/bin:/var/lang/lib/python3.12/site-packages/pyspark/sbin:/usr/lib/jvm/java-11-amazon-corretto/bin" \
-    PYTHONPATH="/var/lang/lib/python3.12/site-packages/pyspark/python:/var/lang/lib/python3.12/site-packages/pyspark/python/lib/py4j-0.10.9.7-src.zip:/home/glue_functions" \
+    PYTHONPATH="/var/lang/lib/python3.12/site-packages/pyspark/python:/var/lang/lib/python3.12/site-packages/pyspark/python/lib/py4j-0.10.9.7-src.zip:/home/libs" \
     INPUT_PATH="" \
     OUTPUT_PATH="" \
     CUSTOM_SQL=""
