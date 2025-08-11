@@ -45,7 +45,7 @@ COPY requirements.txt ${LAMBDA_TASK_ROOT}/
 RUN if [ -f "${LAMBDA_TASK_ROOT}/requirements.txt" ]; then pip install --no-cache-dir -r ${LAMBDA_TASK_ROOT}/requirements.txt; fi
 
 # Copy application files
-COPY libs/glue_functions /home/glue_functions
+COPY /home/libs/glue_functions /home/glue_functions
 COPY spark-class /var/lang/lib/python3.12/site-packages/pyspark/bin/
 COPY sparkLambdaHandler.py ${LAMBDA_TASK_ROOT}
 # Optionally copy log4j.properties if present
