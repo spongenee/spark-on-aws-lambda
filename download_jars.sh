@@ -22,13 +22,13 @@ wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/${HADOOP_
 wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client/${HADOOP_VERSION}/hadoop-client-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
 
 # Add Hadoop statistics and fs libraries to fix NoSuchMethodError
-# wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-annotations/${HADOOP_VERSION}/hadoop-annotations-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
-# wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-auth/${HADOOP_VERSION}/hadoop-auth-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
-# wget -q https://repo1.maven.org/maven2/org/apache/hadoop/thirdparty/hadoop-shaded-guava/${HADOOP_VERSION}/hadoop-shaded-guava-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
-# wget -q https://repo1.maven.org/maven2/org/apache/hadoop/thirdparty/hadoop-shaded-protobuf_3_7/${HADOOP_VERSION}/hadoop-shaded-protobuf_3_7-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
-# wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-mapreduce-client-core/${HADOOP_VERSION}/hadoop-mapreduce-client-core-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
-# wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-mapreduce-client-common/${HADOOP_VERSION}/hadoop-mapreduce-client-common-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
-# wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-hdfs-client/${HADOOP_VERSION}/hadoop-hdfs-client-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-annotations/${HADOOP_VERSION}/hadoop-annotations-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-auth/${HADOOP_VERSION}/hadoop-auth-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/org/apache/hadoop/thirdparty/hadoop-shaded-guava/${HADOOP_VERSION}/hadoop-shaded-guava-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/org/apache/hadoop/thirdparty/hadoop-shaded-protobuf_3_7/${HADOOP_VERSION}/hadoop-shaded-protobuf_3_7-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-mapreduce-client-core/${HADOOP_VERSION}/hadoop-mapreduce-client-core-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-mapreduce-client-common/${HADOOP_VERSION}/hadoop-mapreduce-client-common-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-hdfs-client/${HADOOP_VERSION}/hadoop-hdfs-client-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
 
 # Add additional Hadoop libraries to fix S3A filesystem issues
 wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/${HADOOP_VERSION}/hadoop-client-api-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
