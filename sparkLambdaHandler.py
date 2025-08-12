@@ -47,6 +47,7 @@ def spark_submit(s3_bucket_script: str,input_script: str, event: dict)-> None:
         logger.info(f'Spark-Submitting the Spark script {input_script} from {s3_bucket_script}')
         subprocess.run([
             "spark-submit",
+            "--deploy-mode", "client",
             "--driver-memory", "4g",
             "--executor-memory", "2g",
             "/tmp/spark_script.py",
@@ -73,7 +74,6 @@ def lambda_handler(event, context):
     input_script = os.environ['SPARK_SCRIPT']
     os.environ['INPUT_PATH'] = event.get('INPUT_PATH','')
     os.environ['OUTPUT_PATH'] = event.get('OUTPUT_PATH', '')
-    os.environ['SPARK_DRIVER_MEMORY'] = '4g'
 
     s3_script_download(s3_bucket_script,input_script)
     
