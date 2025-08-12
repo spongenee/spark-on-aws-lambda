@@ -19,7 +19,7 @@ from presidio_structured import StructuredEngine, JsonDataProcessor, StructuredA
 
 
 AWS_REGION = "us-east-1"
-INCREMENTAL_STEP = 1800000
+INCREMENTAL_STEP = 1000000
 CHECKPOINT_BUCKET_NAME = "aws-glue-atvenu-spark-checkpoints"
 PRIMARY_KEY = "id"
 randint = random.getrandbits(128)
@@ -36,15 +36,15 @@ spark = SparkSession.builder.appName("SourceDBSession") \
     .config("spark.driver.bindAddress", "127.0.0.1") \
     .config("spark.driver.memory", "8g") \
     .config("spark.executor.memory", "6g") \
-    .config("spark.memory.fraction", "0.3") \
-    .config("spark.maxRemoteBlockSizeFetchToMem", "1g") \
+    .config("spark.memory.fraction", "0.4") \
+    .config("spark.network.maxRemoteBlockSizeFetchToMem", "1g") \
     .config("spark.task.maxDirectResultSize", "1g") \
     .config('spark.worker.cleanup.enabled', 'True') \
-    .config('spark.sql.shuffle.partitions', 130) \
-    .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.TemporaryAWSCredentialsProvider") \
+    .config('spark.sql.shuffle.partitions', 120) \
     .config("spark.hadoop.fs.s3a.access.key", os.getenv("AWS_ACCESS_KEY_ID")) \
     .config("spark.hadoop.fs.s3a.secret.key", os.getenv("AWS_SECRET_ACCESS_KEY")) \
     .config("spark.hadoop.fs.s3a.session.token", os.getenv("AWS_SESSION_TOKEN")) \
+    .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.TemporaryAWSCredentialsProvider") \
     .getOrCreate()
 sc = spark.sparkContext
 
