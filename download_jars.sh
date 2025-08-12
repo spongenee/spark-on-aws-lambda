@@ -10,10 +10,10 @@ ICEBERG_FRAMEWORK_SUB_VERSION=$8
 DEEQU_FRAMEWORK_VERSION=$9
 
 mkdir $SPARK_HOME/conf
-echo "SPARK_LOCAL_IP=127.0.0.1" > $SPARK_HOME/conf/spark-env.sh
-echo "SPARK_DRIVER_MEMORY=5g" >> $SPARK_HOME/conf/spark-env.sh
-echo "SPARK_EXECUTOR_MEMORY=5g" >> $SPARK_HOME/conf/spark-env.sh
-echo "JAVA_HOME=/usr/lib/jvm/$(ls /usr/lib/jvm |grep java)/jre" >> $SPARK_HOME/conf/spark-env.sh
+echo "export SPARK_LOCAL_IP=127.0.0.1" > $SPARK_HOME/conf/spark-env.sh
+echo "export SPARK_DRIVER_MEMORY=5g" >> $SPARK_HOME/conf/spark-env.sh
+echo "export SPARK_EXECUTOR_MEMORY=5g" >> $SPARK_HOME/conf/spark-env.sh
+echo "export JAVA_HOME=/usr/lib/jvm/$(ls /usr/lib/jvm |grep java)/jre" >> $SPARK_HOME/conf/spark-env.sh
 
 # Download core S3 filesystem JARs with updated versions
 wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
