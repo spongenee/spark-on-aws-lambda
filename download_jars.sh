@@ -112,7 +112,7 @@ EOL
 # Add AWS SDK v2components for better S3 compatibility
 # wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/s3/2.20.56/s3-2.20.56.jar -P ${SPARK_HOME}/jars/
 # wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/utils/2.20.56/utils-2.20.56.jar -P ${SPARK_HOME}/jars/
-# wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/auth/2.20.56/auth-2.20.56.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/auth/${AWS_SDK_VERSION}/auth-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
 # wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/http-client-spi/2.20.56/http-client-spi-2.20.56.jar -P ${SPARK_HOME}/jars/
 # wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/regions/2.20.56/regions-2.20.56.jar -P ${SPARK_HOME}/jars/
 wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/sdk-core/${AWS_SDK_VERSION}/sdk-core-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
