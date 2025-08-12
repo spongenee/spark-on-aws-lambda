@@ -17,7 +17,7 @@ echo "JAVA_HOME=/usr/lib/jvm/$(ls /usr/lib/jvm |grep java)/jre" >> $SPARK_HOME/c
 wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
 
 # Pyspark v3.3 still requires classes from aws sdk v1.xx
-wget -q https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.655/aws-java-sdk-bundle-1.11.655.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.99/aws-java-sdk-bundle-1.12.99.jar -P ${SPARK_HOME}/jars/
 
 # Additional JARs for better S3 compatibility
 wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/${HADOOP_VERSION}/hadoop-common-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
@@ -36,7 +36,7 @@ wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-hdfs-client/${HA
 wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/${HADOOP_VERSION}/hadoop-client-api-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
 wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/${HADOOP_VERSION}/hadoop-client-runtime-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
 
-# wget -q https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_2.13/3.5.6/spark-hadoop-cloud_2.13-3.5.6.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_2.12/${PYSPARK_VERSION}/spark-hadoop-cloud_2.12-${PYSPARK_VERSION}.jar -P ${SPARK_HOME}/jars/
 
 # Fix for IOStatisticsBinding NoSuchMethodError
 # Download specific version that contains the required IOStatisticsBinding class
