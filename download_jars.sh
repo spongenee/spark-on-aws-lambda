@@ -15,7 +15,7 @@ echo "JAVA_HOME=/usr/lib/jvm/$(ls /usr/lib/jvm |grep java)/jre" >> $SPARK_HOME/c
 
 # Download core S3 filesystem JARs with updated versions
 wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
-wget -q https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/${AWS_SDK_VERSION}/aws-java-sdk-bundle-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
+# wget -q https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/${AWS_SDK_VERSION}/aws-java-sdk-bundle-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
 
 # Additional JARs for better S3 compatibility
 wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/${HADOOP_VERSION}/hadoop-common-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
@@ -110,13 +110,14 @@ cat > ${SPARK_HOME}/conf/core-site.xml << EOL
 EOL
 
 # Add AWS SDK v2components for better S3 compatibility
-# wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/s3/2.20.56/s3-2.20.56.jar -P ${SPARK_HOME}/jars/
-# wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/utils/2.20.56/utils-2.20.56.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/s3/${AWS_SDK_VERSION}/s3-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/utils/${AWS_SDK_VERSION}/utils-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/identity/${AWS_SDK_VERSION}/identity-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
 wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/auth/${AWS_SDK_VERSION}/auth-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
-# wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/http-client-spi/2.20.56/http-client-spi-2.20.56.jar -P ${SPARK_HOME}/jars/
-# wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/regions/2.20.56/regions-2.20.56.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/http-client-spi/${AWS_SDK_VERSION}/http-client-spi-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/regions/${AWS_SDK_VERSION}/regions-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
 wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/sdk-core/${AWS_SDK_VERSION}/sdk-core-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
-# wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/apache-client/2.20.56/apache-client-2.20.56.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/apache-client/${AWS_SDK_VERSION}/apache-client-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
 wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/aws-core/${AWS_SDK_VERSION}/aws-core-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
 
 # jar files needed to conncet to Snowflake
