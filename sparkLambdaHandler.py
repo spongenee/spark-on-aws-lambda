@@ -73,6 +73,7 @@ def lambda_handler(event, context):
     input_script = os.environ['SPARK_SCRIPT']
     os.environ['INPUT_PATH'] = event.get('INPUT_PATH','')
     os.environ['OUTPUT_PATH'] = event.get('OUTPUT_PATH', '')
+    os.environ['SPARK_DRIVER_MEMORY'] = '4g'
 
     s3_script_download(s3_bucket_script,input_script)
     
