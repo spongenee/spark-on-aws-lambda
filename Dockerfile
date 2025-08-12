@@ -25,9 +25,9 @@ RUN set -ex && \
     pip install --no-cache-dir setuptools wheel && \
     pip install --no-cache-dir pyspark==$PYSPARK_VERSION boto3 && \
     # tldextract is for pii analyzer
-    pip install presidio_analyzer presidio_anonymizer presidio-structured tldextract && \
-    python -m spacy download en_core_web_lg && \
-    env TLDEXTRACT_CACHE="/var/lang/lib/python3.10/site-packages/tldextract/.suffix_cache" tldextract --update && \
+    pip install presidio_analyzer presidio_anonymizer presidio-structured && \
+    # python -m spacy download en_core_web_lg && \
+    # env TLDEXTRACT_CACHE="/var/lang/lib/python3.10/site-packages/tldextract/.suffix_cache" tldextract --update && \
     # Conditional DEEQU installation
     (echo "$FRAMEWORK" | grep -q "DEEQU" && \
      pip install --no-cache-dir --no-deps pydeequ && \
