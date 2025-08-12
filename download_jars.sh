@@ -115,9 +115,9 @@ EOL
 # wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/auth/2.20.56/auth-2.20.56.jar -P ${SPARK_HOME}/jars/
 # wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/http-client-spi/2.20.56/http-client-spi-2.20.56.jar -P ${SPARK_HOME}/jars/
 # wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/regions/2.20.56/regions-2.20.56.jar -P ${SPARK_HOME}/jars/
-# wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/sdk-core/2.20.56/sdk-core-2.20.56.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/sdk-core/${AWS_SDK_VERSION}/sdk-core-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
 # wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/apache-client/2.20.56/apache-client-2.20.56.jar -P ${SPARK_HOME}/jars/
-# wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/aws-core/2.20.56/aws-core-2.20.56.jar -P ${SPARK_HOME}/jars/
+wget -q https://repo1.maven.org/maven2/software/amazon/awssdk/aws-core/${AWS_SDK_VERSION}/aws-core-${AWS_SDK_VERSION}.jar -P ${SPARK_HOME}/jars/
 
 # jar files needed to conncet to Snowflake
 #wget -q https://repo1.maven.org/maven2/net/snowflake/spark-snowflake_2.12/2.12.0-spark_3.3/spark-snowflake_2.12-2.12.0-spark_3.3.jar -P ${SPARK_HOME}/jars/
