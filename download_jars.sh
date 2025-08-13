@@ -10,9 +10,9 @@ ICEBERG_FRAMEWORK_SUB_VERSION=$8
 DEEQU_FRAMEWORK_VERSION=$9
 
 mkdir $SPARK_HOME/conf
-echo "export SPARK_LOCAL_IP=127.0.0.1" > $SPARK_HOME/conf/spark-env.sh
-echo "export SPARK_DRIVER_MEMORY=5g" >> $SPARK_HOME/conf/spark-env.sh
-echo "export SPARK_EXECUTOR_MEMORY=5g" >> $SPARK_HOME/conf/spark-env.sh
+echo "export SPARK_MASTER_HOST=127.0.0.1" > $SPARK_HOME/conf/spark-env.sh
+echo "export SPARK_WORKER_CORES=6" >> $SPARK_HOME/conf/spark-env.sh
+echo "export SPARK_WORKER_MEMORY=10g" >> $SPARK_HOME/conf/spark-env.sh
 echo "export JAVA_HOME=/usr/lib/jvm/$(ls /usr/lib/jvm |grep java)/jre" >> $SPARK_HOME/conf/spark-env.sh
 
 # Download core S3 filesystem JARs with updated versions
