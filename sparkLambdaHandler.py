@@ -47,9 +47,6 @@ def spark_submit(s3_bucket_script: str,input_script: str, event: dict)-> None:
         logger.info(f'Spark-Submitting the Spark script {input_script} from {s3_bucket_script}')
         subprocess.run([
             "spark-submit",
-            "--deploy-mode", "client",
-            "--driver-memory", "5g",
-            "--executor-memory", "5g",
             "/tmp/spark_script.py",
             "--event", json.dumps(event)
         ], check=True, env=os.environ)
