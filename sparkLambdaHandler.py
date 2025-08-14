@@ -65,7 +65,7 @@ def lambda_handler(event, context):
     from Amazon S3 location and spark submitting 
     the script in AWS Lambda
     """
-
+    subprocess.run(["rm","-rf","/tmp/..?*","/tmp/.[!.]*", "/tmp/*"], check=True)
     logger.info("******************Start AWS Lambda Handler************")
     s3_bucket_script = os.environ['SCRIPT_BUCKET']
     input_script = os.environ['SPARK_SCRIPT']
