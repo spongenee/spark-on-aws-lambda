@@ -6,8 +6,7 @@ import sys
 import boto3
 from botocore.exceptions import ClientError
 
-from presidio_analyzer import AnalyzerEngine
-from presidio_anonymizer import AnonymizerEngine
+
 from presidio_anonymizer.entities import OperatorConfig
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf, col, lit
@@ -16,6 +15,31 @@ from pyspark.context import SparkContext
 from glue_functions import extract_jdbc_conf
 import random
 from presidio_structured import StructuredEngine, JsonDataProcessor, StructuredAnalysis, PandasDataProcessor
+from pyspark.conf import SparkConf
+
+conf = SparkConf()
+conf.setMaster("local[6]")
+conf.set("spark.driver.bindAddress", "127.0.0.1")
+conf.set("spark.driver.memory", "6g")
+conf.set("spark.driver.maxResultSize", "2g")
+conf.set("spark.ui.enabled", "false")
+conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
+conf.set("spark.memory.fraction", "0.4")
+conf.set("spark.network.maxRemoteBlockSizeFetchToMem", "1g")
+conf.set("spark.task.maxDirectResultSize", "1g")
+conf.set('spark.worker.cleanup.enabled', 'True')
+conf.set('spark.sql.shuffle.partitions', 130)
+conf.set("spark.hadoop.fs.s3a.access.key", os.getenv("AWS_ACCESS_KEY_ID"))
+conf.set("spark.hadoop.fs.s3a.secret.key", os.getenv("AWS_SECRET_ACCESS_KEY"))
+conf.set("spark.hadoop.fs.s3a.session.token", os.getenv("AWS_SESSION_TOKEN"))
+conf.set("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.TemporaryAWSCredentialsProvider")
+conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+conf.set("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
+conf.set("spark.hadoop.fs.s3a.committer.magic.enabled", "true")
+conf.set("spark.hadoop.mapreduce.outputcommitter.factory.scheme.s3a", "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory")
+conf.set("fs.s3a.committer.name", "magic")
+conf.set("spark.sql.sources.commitProtocolClass", "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol")
+conf.set("spark.sql.parquet.output.committer.class", "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter")
 
 
 AWS_REGION = "us-east-1"
@@ -31,36 +55,22 @@ formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.info("------> Building spark session...")
-spark = SparkSession.builder.appName("SourceDBSession") \
-    .master("local[*]") \
-    .config("spark.driver.bindAddress", "127.0.0.1") \
-    .config("spark.driver.memory", "8g") \
-    .config("spark.executor.memory", "6g") \
-    .config("spark.memory.fraction", "0.4") \
-    .config("spark.network.maxRemoteBlockSizeFetchToMem", "1g") \
-    .config("spark.task.maxDirectResultSize", "1g") \
-    .config('spark.worker.cleanup.enabled', 'True') \
-    .config('spark.sql.shuffle.partitions', 120) \
-    .config("spark.hadoop.fs.s3a.access.key", os.getenv("AWS_ACCESS_KEY_ID")) \
-    .config("spark.hadoop.fs.s3a.secret.key", os.getenv("AWS_SECRET_ACCESS_KEY")) \
-    .config("spark.hadoop.fs.s3a.session.token", os.getenv("AWS_SESSION_TOKEN")) \
-    .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.TemporaryAWSCredentialsProvider") \
-    .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer") \
-    .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
-    .config("spark.hadoop.fs.s3a.committer.magic.enabled", "true") \
-    .config("spark.hadoop.mapreduce.outputcommitter.factory.scheme.s3a", "org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory") \
-    .config("fs.s3a.committer.name", "magic") \
-    .config("spark.sql.sources.commitProtocolClass", "org.apache.spark.internal.io.cloud.PathOutputCommitProtocol") \
-    .config("spark.sql.parquet.output.committer.class", "org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter") \
-    .getOrCreate()
+
+
+spark = SparkSession.builder.config(conf=conf).getOrCreate()
 sc = spark.sparkContext
 
+print("Driver is running as:", spark.sparkContext.appName)
+print("Running in mode:", spark.sparkContext.master)
+print("Driver memory:", spark.conf.get("spark.driver.memory"))
+print("Default parallelism:", spark.sparkContext.defaultParallelism)
 
 class Parameters:
     def __init__(self):
         self.first_time_read_flag = False
         self.processed_rows_count = 0
         self.prev_processed_rows_count = 0
+        self.processing_rows_count = 0
         self.insert_data_exists_flag = False
         self.update_data_exists_flag = False
 
@@ -130,7 +140,9 @@ class QuerySource(object):
             password=self.jdbc_conf['password'],
             driver=self.jdbc_conf['driver']
         ).load()
-        if df.count() >= 0: self.checkpoint_instance.update_data_exists_flag = True
+
+        self.processing_rows_count = df.count()
+        if self.processing_rows_count >= 0: self.checkpoint_instance.update_data_exists_flag = True
         return df
 
 
@@ -320,12 +332,10 @@ def main(db_name, table_name, entity_mappings):
     )
     df = query_instance.get_inc_update()
     sc.setCheckpointDir(f"s3a://{CHECKPOINT_BUCKET_NAME}/{db_name}/{table_name}")
-    current_processed_rows_count = df.count()
-    logger.info(f"current_processed_rows_count: {current_processed_rows_count}")
     
 
-    if current_processed_rows_count != 0 and helper_checkpoints.update_data_exists_flag:
-        helper_checkpoints.processed_rows_count = int(current_processed_rows_count) +  int(helper_checkpoints.prev_processed_rows_count)
+    if helper_checkpoints.update_data_exists_flag:
+        helper_checkpoints.processed_rows_count = int(helper_checkpoints.processing_rows_count) +  int(helper_checkpoints.prev_processed_rows_count)
         logger.info(f"helper_checkpoints.processed_rows_count: {helper_checkpoints.processed_rows_count}")
         try: 
             # apply the udf
@@ -339,10 +349,10 @@ def main(db_name, table_name, entity_mappings):
             )
             anonymized_df.unpersist()
             helper_checkpoints.write()
+            put_event(params)
         except Exception as e:
             logger.error(f"Failed to apply UDF on {db_name}/{table_name} {INCREMENTAL_STEP} ROWS from ROW {str(helper_checkpoints.prev_processed_rows_count)}")
             logger.error(e)
-        #put_event(params)
     else:
         logger.info(f"------> No more rows to process for {db_name}/{table_name}!")
     df.unpersist()    
