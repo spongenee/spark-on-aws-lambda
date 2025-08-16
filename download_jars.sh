@@ -15,6 +15,9 @@ echo "export SPARK_WORKER_CORES=6" >> $SPARK_HOME/conf/spark-env.sh
 echo "export SPARK_WORKER_MEMORY=10g" >> $SPARK_HOME/conf/spark-env.sh
 echo "export JAVA_HOME=/usr/lib/jvm/$(ls /usr/lib/jvm |grep java)/jre" >> $SPARK_HOME/conf/spark-env.sh
 
+# Download spark-s3-shuffle plugin
+wget -q https://github.com/IBM/spark-s3-shuffle/releases/download/v0.9.6/spark-s3-shuffle_2.12-3.5.0_0.9.6.jar -P ${SPARK_HOME}/jars/
+
 # Download core S3 filesystem JARs with updated versions
 wget -q https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar -P ${SPARK_HOME}/jars/
 
