@@ -23,12 +23,15 @@ conf.set("spark.driver.bindAddress", "127.0.0.1")
 conf.set("spark.driver.memory", "6g")
 conf.set("spark.driver.maxResultSize", "2g")
 conf.set("spark.ui.enabled", "false")
+conf.set("spark.shuffle.manager", "org.apache.spark.shuffle.sort.S3ShuffleManager")
+conf.set("spark.shuffle.sort.io.plugin.class", "org.apache.spark.shuffle.S3ShuffleDataIO")
+conf.set("spark.shuffle.s3.rootDir", f"s3a://aws-glue-atvenu-spark-scripts/shuffle")
 conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
 conf.set("spark.memory.fraction", "0.4")
 conf.set("spark.network.maxRemoteBlockSizeFetchToMem", "1g")
 conf.set("spark.task.maxDirectResultSize", "1g")
 conf.set('spark.worker.cleanup.enabled', 'True')
-conf.set('spark.sql.shuffle.partitions', 130)
+conf.set('spark.sql.shuffle.partitions', 200)
 conf.set("spark.hadoop.fs.s3a.access.key", os.getenv("AWS_ACCESS_KEY_ID"))
 conf.set("spark.hadoop.fs.s3a.secret.key", os.getenv("AWS_SECRET_ACCESS_KEY"))
 conf.set("spark.hadoop.fs.s3a.session.token", os.getenv("AWS_SESSION_TOKEN"))
@@ -43,7 +46,7 @@ conf.set("spark.sql.parquet.output.committer.class", "org.apache.spark.internal.
 
 
 AWS_REGION = "us-east-1"
-INCREMENTAL_STEP = 1000000
+INCREMENTAL_STEP = 1200000
 CHECKPOINT_BUCKET_NAME = "aws-glue-atvenu-spark-checkpoints"
 PRIMARY_KEY = "id"
 randint = random.getrandbits(128)
@@ -141,8 +144,8 @@ class QuerySource(object):
             driver=self.jdbc_conf['driver']
         ).load()
 
-        self.processing_rows_count = df.count()
-        if self.processing_rows_count >= 0: self.checkpoint_instance.update_data_exists_flag = True
+        self.checkpoint_instance.processing_rows_count = df.count()
+        if self.checkpoint_instance.processing_rows_count > 0: self.checkpoint_instance.update_data_exists_flag = True
         return df
 
 
@@ -336,6 +339,8 @@ def main(db_name, table_name, entity_mappings):
 
     if helper_checkpoints.update_data_exists_flag:
         helper_checkpoints.processed_rows_count = int(helper_checkpoints.processing_rows_count) +  int(helper_checkpoints.prev_processed_rows_count)
+        logger.info(f"helper_checkpoints.processing_rows_count: {helper_checkpoints.processing_rows_count}")
+
         logger.info(f"helper_checkpoints.processed_rows_count: {helper_checkpoints.processed_rows_count}")
         try: 
             # apply the udf
@@ -349,7 +354,7 @@ def main(db_name, table_name, entity_mappings):
             )
             anonymized_df.unpersist()
             helper_checkpoints.write()
-            put_event(params)
+            #put_event(params)
         except Exception as e:
             logger.error(f"Failed to apply UDF on {db_name}/{table_name} {INCREMENTAL_STEP} ROWS from ROW {str(helper_checkpoints.prev_processed_rows_count)}")
             logger.error(e)
