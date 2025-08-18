@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 import boto3
+import random
 from botocore.exceptions import ClientError
 
 
@@ -13,9 +14,10 @@ from pyspark.sql.functions import udf, col, lit
 from pyspark.sql.types import StringType
 from pyspark.context import SparkContext
 from glue_functions import extract_jdbc_conf
-import random
 from presidio_structured import StructuredEngine, JsonDataProcessor, StructuredAnalysis, PandasDataProcessor
 from pyspark.conf import SparkConf
+from cryptography.fernet import Fernet
+
 
 conf = SparkConf()
 conf.setMaster("local[6]")
@@ -46,7 +48,7 @@ conf.set("spark.sql.parquet.output.committer.class", "org.apache.spark.internal.
 
 
 AWS_REGION = "us-east-1"
-INCREMENTAL_STEP = 1200000
+INCREMENTAL_STEP = 100
 CHECKPOINT_BUCKET_NAME = "aws-glue-atvenu-spark-checkpoints"
 PRIMARY_KEY = "id"
 randint = random.getrandbits(128)
@@ -202,11 +204,37 @@ def anonymize_json_text(json_text: str, entity_mapping: dict = None) -> str:
     anonymized_result = structured_engine.anonymize(
         json_data,
         json_analysis,
-        operators={"DEFAULT": OperatorConfig("encrypt", {"key": randstr})},
+        operators={
+            "DEFAULT": OperatorConfig("encrypt", {"key": randstr}),
+            "EMAIL_ADDRESS": OperatorConfig("custom", {"lambda": encrypt_email}),
+            "PHONE_NUMBER": OperatorConfig(
+                "mask",
+                {
+                    "type": "mask",
+                    "masking_char": "*",
+                    "chars_to_mask": 5,
+                    "from_end": True,
+                },
+            ),
+            "IP_ADDRESS": OperatorConfig("replace", {"new_value": "1.1.1.1"})},
     )
 
     return json.dumps(anonymized_result)
 
+
+def encrypt_email(email, email_domain="@cryptVenu.com"):
+    if email.endswith("@atvenu.com"):
+        return email
+    else:
+        result = scramble_text(email) + email_domain
+        return result
+
+def scramble_text(text) -> str:
+    key = Fernet.generate_key()
+    f = Fernet(key)
+    encoded_text = text.encode(encoding="utf-8")  
+    encrypted_text = f.encrypt(encoded_text)
+    return encrypted_text.decode("utf-8")
 
 def anonymize_dataframe_as_tabular(df, column_name, entity_mapping):
     """
@@ -229,6 +257,7 @@ def anonymize_dataframe_as_tabular(df, column_name, entity_mapping):
         pandas_df.dropna(subset=[column_name]),
         tabular_analysis,
         operators={"DEFAULT": OperatorConfig("encrypt", {"key": randstr}),
+                   "EMAIL_ADDRESS": OperatorConfig("custom", {"lambda": encrypt_email}),
     # TypeError: object of type 'NoneType' has no len()
     "PHONE_NUMBER": OperatorConfig(
         "mask",
